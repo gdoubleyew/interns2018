@@ -45,16 +45,33 @@ def main():
     parser = argparse.ArgumentParser(description="Realtime Client")
     parser.add_argument('-a', action="store", dest="addr", default="localhost")
     parser.add_argument('-p', action="store", dest="port", default=5200)
+    #parser.add_argument('-r', action="")
     args = parser.parse_args()
     client = Client(args.addr, args.port)
-    client_ts = time.time()
-    params = {
-       "request_id": 1,
-       "client_ts": client_ts
-    }
-    res = client.get(params)
-    vals = res.json()
-    print("get result: {}".format(vals))
+
+    x = 0
+    avg = []
+    while x < 10:
+        client_ts = time.time()
+        params = {
+        "request_id": 1,
+        "client_ts": client_ts
+        }
+        res = client.get(params)
+        client_ts2 = time.time()
+        vals = res.json()
+        #print("get result: {}".format(vals))
+        diff = client_ts2 - client_ts
+        avg.append(diff)
+        x = x + 1
+    average = 0
+    x = 0
+    while len(avg) > x:
+        average = average + avg[x]
+        x = x + 1
+    print("Avg: "+str(average/len(avg))+"  ")
+    print("Max: "+str(max(avg))+"  ")
+    print("Min: "+str(min(avg))+"  ")
 
 
 if __name__ == "__main__":
