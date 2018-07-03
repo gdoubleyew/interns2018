@@ -8,6 +8,7 @@ import time
 
 app = Flask(__name__)
 
+# http://localhost:5200/
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -54,7 +55,7 @@ def main():
     parser.add_argument('-p', action="store", dest="port")
     args = parser.parse_args()
 
-    app.run(port=args.port)
+    app.run(host="0.0.0.0", debug=False, port=args.port)
 
 
 if __name__ == '__main__':
