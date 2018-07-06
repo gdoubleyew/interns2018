@@ -45,34 +45,36 @@ def main():
     parser = argparse.ArgumentParser(description="Realtime Client")
     parser.add_argument('-a', action="store", dest="addr", default="localhost")
     parser.add_argument('-p', action="store", dest="port", default=5200)
-    #parser.add_argument('-r', action="")
+    #parser.add_argument('-r', action="store", default = False)
     args = parser.parse_args()
     client = Client(args.addr, args.port)
 
+    rtt_list = []
     x = 0
-    avg = []
-    while x < 10:
-        client_ts = time.time()
-        params = {
-        "request_id": 1,
-        "client_ts": client_ts
-        }
-        res = client.get(params)
-        client_ts2 = time.time()
-        vals = res.json()
-        #print("get result: {}".format(vals))
-        diff = client_ts2 - client_ts
-        avg.append(diff)
-        x = x + 1
-    average = 0
-    x = 0
-    while len(avg) > x:
-        average = average + avg[x]
-        x = x + 1
-    print("Avg: "+str(average/len(avg))+"  ")
-    print("Max: "+str(max(avg))+"  ")
-    print("Min: "+str(min(avg))+"  ")
+    y = 0
+    total = []
 
+    while y < 10:
+        while 10 > x:
+            client_ts = time.time()
+            params = {
+            "request_id": 1,
+            "client_ts": client_ts
+            }
+            res = client.get(params)
+            client_ts2 = time.time()
+            vals = res.json()
+            server_ts = vals['server_ts']
+
+            rtt = client_ts2 - client_ts
+            rtt_list.append(rtt)
+            x += 1
+
+        TT = min(rtt_list)/2
+        D = client_ts2 - server_ts - TT
+        total.append(D)
+        y += 1
+    print("Total: {}".format(min(total)))
 
 if __name__ == "__main__":
     main()
