@@ -72,7 +72,7 @@ def main():
 
     min_T = min(rtt_list)
     best_val = total[rtt_list.index(min_T)]
-    print("Total: {}".format(min(total)))
+    print("Total: {}".format(best_val))
 
 if __name__ == "__main__":
     main()
