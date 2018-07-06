@@ -50,30 +50,28 @@ def main():
     client = Client(args.addr, args.port)
 
     rtt_list = []
-    x = 0
-    y = 0
     total = []
 
-    while y < 10:
-        while 10 > x:
-            client_ts = time.time()
-            params = {
-            "request_id": 1,
-            "client_ts": client_ts
-            }
-            res = client.get(params)
-            client_ts2 = time.time()
-            vals = res.json()
-            server_ts = vals['server_ts']
+    for i in range(0,100):
+        client_ts = time.time()
+        params = {
+        "request_id": 1,
+        "client_ts": client_ts
+        }
+        res = client.get(params)
+        client_ts2 = time.time()
+        vals = res.json()
+        server_ts = vals['server_ts']
 
-            rtt = client_ts2 - client_ts
-            rtt_list.append(rtt)
-            x += 1
+        rtt = client_ts2 - client_ts
+        rtt_list.append(rtt)
 
-        TT = min(rtt_list)/2
+        TT = rtt/2
         D = client_ts2 - server_ts - TT
         total.append(D)
-        y += 1
+
+    min_T = min(rtt_list)
+    best_val = total[rtt_list.index(min_T)]
     print("Total: {}".format(min(total)))
 
 if __name__ == "__main__":
