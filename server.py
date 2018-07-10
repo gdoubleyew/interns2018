@@ -10,13 +10,11 @@ import random
 
 app = Flask(__name__)
 
-finished = False
 # http://localhost:5200/
 def work():
-    global finished
-    num = random.randint(1,3)
-    time.sleep(num)
-    finished = True
+    num = random.randint(1,5)
+    time.sleep(10)
+    print("leaving work")
 
 @app.route('/calcDelta', methods=['GET', 'POST'])
 def calcDelta():
@@ -72,6 +70,7 @@ def analysis():
     NOTE: We do an extra serialize during get and extra deserialize during
         put.
     """
+
     if request.method == 'POST':
         request_id = request.files['request_id'].read()
         data = request.files['value'].read()
@@ -82,7 +81,6 @@ def analysis():
         return request_id
 
     elif request.method == 'GET':
-
         # request_id = request.args['request_id']
         #
         # returnValue = {
@@ -102,10 +100,10 @@ def analysis():
         workT = threading.Thread(target=work)
         workT.start()
         workT.join(timeout=dedline)
-        if finished == True:
-            returnValue= {"return": "succses"}
+        if not workT.is_alive():
+            returnValue = {"return": "succses"}
         else:
-            returnValue= {"return": "failed"}
+            returnValue = {"return": "failed"}
 
 
         rv = flask.make_response(flask.jsonify(returnValue), 400)
@@ -123,7 +121,6 @@ def main():
     args = parser.parse_args()
 
     app.run(host="0.0.0.0", debug=False, port=args.port)
-
 
 
 if __name__ == '__main__':
