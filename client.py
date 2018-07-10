@@ -89,6 +89,7 @@ def main():
     #opens file were Delta is (or is not)
     Dfile = open("Delta_file.txt", "r+")
     Delta = Dfile.read()
+    print(Delta)
     #checks to see if delta is in file and skips this block if it is
     if not Delta:
         DClient = DClient(args.addr, args.port)
@@ -129,7 +130,7 @@ def main():
     }
     res = Client.get(params)
     vals = res.json()
-
+    print(vals['return'])
 
 if __name__ == "__main__":
     main()
