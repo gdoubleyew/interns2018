@@ -11,9 +11,8 @@ import random
 app = Flask(__name__)
 
 # http://localhost:5200/
-def work():
-    num = random.randint(1,5)
-    time.sleep(10)
+def work(num):
+    time.sleep(num)
     print("leaving work")
 
 @app.route('/calcDelta', methods=['GET', 'POST'])
@@ -81,23 +80,17 @@ def analysis():
         return request_id
 
     elif request.method == 'GET':
-        # request_id = request.args['request_id']
-        #
-        # returnValue = {
-        #     "request_id": request_id,
-        #     "client_ts": client_ts,
-        #     "server_ts": server_ts,
-        #     #"Delta_here": Delta_here
 
-
-        # }
-        client_ts = float(request.args['client_ts'])
+        #client_ts = float(request.args['client_ts'])
+        client_dedline = float(request.args['dedline'])
         server_ts = time.time()
-        delta = float(request.args['delta'])
-        hTT = server_ts - client_ts
-        dedline = 2 - ((2*hTT)+delta)
+        work_diff = float(request.args['work_diff'])
+        #delta = float(request.args['delta'])
+        # hTT = server_ts - client_ts
+        # dedline = 2 - ((2*hTT)+delta)
+        dedline = client_dedline - server_ts
 
-        workT = threading.Thread(target=work)
+        workT = threading.Thread(target=work, args=(work_diff,))
         workT.start()
         workT.join(timeout=dedline)
         if not workT.is_alive():

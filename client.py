@@ -2,6 +2,7 @@ import requests
 import pickle
 import argparse
 import time
+import random
 # import subprocess
 
 #client to run analasis
@@ -123,10 +124,13 @@ def main():
     Client = AClient(args.addr, args.port)
 
     client_ts = time.time()
+    work_diff = random.randint(1, 3)
+    dedline = client_ts + 2 + float(Delta)
     params = {
     "request_id": 1,
     "client_ts": client_ts,
-    "delta": Delta
+    "dedline": dedline,
+    "work_diff": work_diff
     }
     res = Client.get(params)
     vals = res.json()
