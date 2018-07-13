@@ -6,7 +6,7 @@ import os
 # import subprocess
 
 
-# client to run analasis
+# client to run analysis
 class Client(object):
     """A class to communicate with a REST server.
     """
@@ -58,7 +58,7 @@ def calcClockSkew(client, file=None, reset=True, test_offset=0):
         reset = True
     # opens file with perditermined clock diffrence
     if not reset:
-        if os.path.exists(file):
+        if os.path. exists(file):
             with open(file, "r") as Dfile:
                 clockSkew = Dfile.read()
     # test_offset defaults to 0
@@ -80,7 +80,7 @@ def calcClockSkew(client, file=None, reset=True, test_offset=0):
             client_ts2 = time.time()
             server_ts = vals['server_ts']
 
-            a = server_ts - client_ts       # I think this fomula is cousing an error
+            a = server_ts - client_ts       # I think this formula is causing an error
             b = server_ts - client_ts2      #
             RTT = a - b
             clockSkew = (a + b)/2
@@ -106,7 +106,7 @@ def analysis(client, clockSkew_file=None, work_diff=0):
     if client is None:
         print("No client spesified")
         quit()
-    # if no file is endered (it creat a temperary file)
+    # if no file is entered (it creat a temperary file)
     if clockSkew_file is None:
         with open("Default.txt", "w+") as Dfile:
             Dfile.close()
@@ -155,10 +155,10 @@ def main():
     # parser.add_argument('-r', action="store", default = False)
     args = parser.parse_args()
 
-    # creats client object
+    # creates client object
     client = Client(args.addr, args.port)
 
-    calcClockSkew(client, "clockSkew_file.txt", True)
+    calcClockSkew(client, "clockSkew_file.txt", True, "1,2,2")
     analysis(client, "clockSkew_file.txt", 2)
 
 
