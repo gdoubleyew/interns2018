@@ -77,3 +77,16 @@ def test_calcClockSkew_noArgs():
     remove_file(clockSkew_file)
     retVal = client.calcClockSkew(getClient())
     assert round(retVal, 2) == round(clockSkew_offset, 2)
+
+def test_calcClockSkew_numreplace():
+    clockSkew_offset = 3
+    remove_file(clockSkew_file)
+    retVal = client.calcClockSkew(getClient(),1,2,3)
+    assert round(retVal, 2) == round(clockSkew_offset, 2)
+
+def test_calcClockSkew_numreplace():
+    clockSkew_offset = 3
+    remove_file(clockSkew_file)
+    retVal = client.calcClockSkew(getClient(),"6,7,9","3,2,4,5,5",clockSkew_offset)
+    # variation of test_offset fails..
+    assert round(retVal, 2) == round(clockSkew_offset, 2)
