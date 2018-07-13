@@ -4,19 +4,20 @@ import argparse
 import pickle
 import time
 import threading
-import random
 # import base64
 # import io
 
 app = Flask(__name__)
+
 
 # http://localhost:5200/
 def work(num):
     time.sleep(num)
     print("leaving work")
 
-@app.route('/calcDelta', methods=['GET', 'POST'])
-def calcDelta():
+
+@app.route('/calcClockSkew', methods=['GET', 'POST'])
+def calcClockSkew():
     """TODO (dsuo): Add comments.
 
     TODO (dsuo): Maybe care about batching
@@ -39,15 +40,15 @@ def calcDelta():
 
         request_id = request.args['request_id']
         client_ts = float(request.args['client_ts'])
-        server_ts = time.time()
+        test_offset = float(request.args['test_offset'])
+        server_ts = time.time() + test_offset
 
         returnValue = {
             "request_id": request_id,
             "client_ts": client_ts,
             "server_ts": server_ts,
-            #"Delta_here": Delta_here
+            # "ClockSkew_here": ClockSkew_here
         }
-
 
         rv = flask.make_response(flask.jsonify(returnValue), 400)
         return rv
@@ -61,7 +62,7 @@ def calcDelta():
 @app.route('/analysis', methods=['GET', 'POST'])
 def analysis():
     """TODO (dsuo): Add comments.
-
+clockSkew_offset
     TODO (dsuo): Maybe care about batching
     TODO (dsuo): REST is nice conceptually, but probably too much overhead
     TODO (dsuo): Move logic to C++ (keep as head node process)
@@ -81,23 +82,21 @@ def analysis():
 
     elif request.method == 'GET':
 
-        #client_ts = float(request.args['client_ts'])
-        client_dedline = float(request.args['dedline'])
+        # client_ts = float(request.args['client_ts'])
+        client_deadline = float(request.args['deadline'])
         server_ts = time.time()
         work_diff = float(request.args['work_diff'])
-        #delta = float(request.args['delta'])
-        # hTT = server_ts - client_ts
-        # dedline = 2 - ((2*hTT)+delta)
-        dedline = client_dedline - server_ts
-
         workT = threading.Thread(target=work, args=(work_diff,))
         workT.start()
-        workT.join(timeout=dedline)
+        deadline = client_deadline - server_ts
+        print("deadline: {}".format(deadline))
+        workT.join(timeout=deadline)
         if not workT.is_alive():
             returnValue = {"return": "succses"}
         else:
             returnValue = {"return": "failed"}
 
+        returnValue['deadline'] = deadline
 
         rv = flask.make_response(flask.jsonify(returnValue), 400)
         return rv
