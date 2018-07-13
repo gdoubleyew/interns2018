@@ -1,14 +1,79 @@
 import pytest
 import sys
+import os
 sys.path.append("..")
 import client
 
-client1 = client.Client(args.addr, args.port)
 
-def test_calcDelta():
-    assert type(client.calcDelta(client1, "Delta.txt", True)) == type(0.1)
+@pytest.fixture(scope="module")
+def getClient():  # type: ignore
+    cl = client.Client("localhost", 5200)
+    return cl
 
-def test_analysis():
-    difficulty = 0
-    num_results = 0
-    client.analysis(client1, "Delta_file", difficulty, num_results)
+
+# makes random clockSkew offset
+clockSkew_offset = 0
+clockSkew_file = "ClockSkew_test.txt"
+
+
+def remove_file(clockSkew_file):
+    if os.path.exists(clockSkew_file):
+        os.remove(clockSkew_file)
+
+
+def test_calcClockSkew_posative():
+    clockSkew_offset = 10
+    remove_file(clockSkew_file)
+    retVal = client.calcClockSkew(getClient(), clockSkew_file, True, clockSkew_offset)
+    assert round(retVal, 2) == round(clockSkew_offset, 2)
+
+
+def test_calcClockSkew_negative():
+    clockSkew_offset = -10
+    remove_file(clockSkew_file)
+    retVal = client.calcClockSkew(getClient(), clockSkew_file, True, clockSkew_offset)
+    assert round(retVal, 2) == round(clockSkew_offset, 2)
+
+
+def test_analysis_completes():
+    difficulty = [1, -1]
+    for diff in difficulty:
+        remove_file(clockSkew_file)
+        succsesful, time_took, deadlineTime = client.analysis(getClient(), clockSkew_file, diff)
+        print(succsesful, time_took, deadlineTime)
+        assert succsesful == "succses"
+        assert round(time_took, 1) <= round(deadlineTime, 1)
+
+
+def test_analysis_fails():
+    difficulty = [3, -3]
+    for diff in difficulty:
+        remove_file(clockSkew_file)
+        succsesful, time_took, deadlineTime = client.analysis(getClient(), clockSkew_file, diff)
+        assert succsesful == "failed"
+        assert round(time_took, 1) == round(deadlineTime, 1)
+
+
+# the None checks for code
+def test_analysis_none():
+    remove_file(clockSkew_file)
+    succsesful, time_took, deadlineTime = client.analysis(getClient(), None, None)
+    assert round(time_took, 1) <= round(deadlineTime, 1)
+
+
+def test_analysis_noArgs():
+    remove_file(clockSkew_file)
+    succsesful, time_took, deadlineTime = client.analysis(getClient())
+    assert round(time_took, 1) <= round(deadlineTime, 1)
+
+
+def test_calcClockSkew_none():
+    remove_file(clockSkew_file)
+    retVal = client.calcClockSkew(getClient(), None, None, None)
+    assert round(retVal, 2) == round(clockSkew_offset, 2)
+
+
+def test_calcClockSkew_noArgs():
+    remove_file(clockSkew_file)
+    retVal = client.calcClockSkew(getClient())
+    assert round(retVal, 2) == round(clockSkew_offset, 2)
