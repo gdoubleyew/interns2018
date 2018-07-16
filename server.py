@@ -83,12 +83,12 @@ clockSkew_offset
     elif request.method == 'GET':
 
         # client_ts = float(request.args['client_ts'])
-        client_deadline = float(request.args['deadline'])
+        server_deadline = float(request.args['deadline'])
         server_ts = time.time()
         work_diff = float(request.args['work_diff'])
         workT = threading.Thread(target=work, args=(work_diff,))
         workT.start()
-        deadline = client_deadline - server_ts
+        deadline = server_deadline - server_ts
         print("deadline: {}".format(deadline))
         workT.join(timeout=deadline)
         if not workT.is_alive():
