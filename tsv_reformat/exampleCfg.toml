@@ -1,0 +1,13 @@
+# This is the TOML version
+title = "TOML Example"
+
+[transformations]
+# Names of headers
+insert_header = ["f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12"]
+
+# Zero based column order
+reorder_columns = [2, 0, 6] # can reorder however you want
+
+# Search and replace criteria
+# Can specify multiple changes as such {"NaN" = "N/A", "2" = "Blank"}
+search_replace_cells = {"NaN" = "N/A", 1 = "hello"}
