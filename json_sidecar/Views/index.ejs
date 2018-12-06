@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Testing server</title>
+  </head>
+  <body>
+    <script>
+      function clickit() {
+        document.getElementById('form').submit();
+      }
+      function testingVars() {
+        var val = <%- JSON.stringify(val) %>;
+        alert(val);
+      }
+
+    </script>
+    <h1>Testing</h1>
+    <form id="form" method="POST" action="/index">
+      Name:<input type="text" name="name"><br>
+      Age:<input type="text" name="age"><br>
+      <input type="button" value="submit" onclick="clickit();">
+    </form>
+    <input type="button" value="Click" onclick="testingVars();">
+  </body>
+</html>

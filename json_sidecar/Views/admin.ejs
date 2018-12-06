@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Json Side Car</title>
+    <style>
+      body {
+        background-color: lightblue;
+      }
+      #getFileBTN {
+        height: 100px;
+        width: 200px;
+        font-size: 30px;
+      }
+    </style>
+    <script>
+    var Ukey = "/u/";
+    var elements_list = JSON.parse("[" + <%- JSON.stringify(elements) %> + "]");
+    var description_list = JSON.parse(<%- JSON.stringify(discriptions) %>);
+    console.log(elements_list);
+    console.log(description_list);
+
+     window.onload = function() {pageStart();};
+
+    function download(filename, text) {
+      var element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      element.setAttribute('download', filename);
+
+      element.style.display = 'none';
+      document.body.appendChild(element);
+
+      element.click();
+
+      document.body.removeChild(element);
+      }
+
+    // Creates elements in elements_list
+    function pageStart() {
+      document.getElementById("fileInput").addEventListener('change', handleFileSelect);
+
+      for (var key in elements_list) {
+        var item = elements_list[key];
+
+        var br = document.createElement("br");
+        var quest = document.createElement("INPUT");
+        var form = document.getElementById("theForm");
+        var label = document.createElement("LABEL");
+        var checkbox = document.createElement("INPUT");
+
+        quest.setAttribute('id', item);
+        checkbox.setAttribute('type', 'checkbox');
+        checkbox.setAttribute('id', item+"Checkbox");
+        checkbox.setAttribute('onclick', 'check_box("'+item+'");');
+        checkbox.setAttribute('checked', true);
+        label.setAttribute('for', item);
+        label.setAttribute('id', item + 'Label')
+
+        form.appendChild(checkbox);
+        form.appendChild(label);
+        document.getElementById(item + 'Label').innerHTML = item + ': ';
+        form.appendChild(quest);
+        form.appendChild(br);
+     }
+     var div = document.getElementById("QBlock");
+     var button = document.createElement("BUTTON");
+     var quest = document.createElement("INPUT");
+
+     // quest.setAttribute('id', "FName");
+     // quest.setAttribute('placeholder', "File Name");
+     button.setAttribute('onClick', "getVal();");
+     button.setAttribute('id', "getFileBTN");
+     // form.appendChild(quest);
+     div.appendChild(button);
+     document.getElementById("getFileBTN").innerHTML = "Create File";
+
+    }
+
+
+    function getVal(){
+      var fname = prompt("What should the file name be?");
+      var valid = false;
+      while(!valid){
+        if(fname.length > 30) {
+          fname = prompt("The file name has to be less then 30 characters.");
+        } else if(! /^[a-zA-Z0-9._\-]+$/.test(fname)) {
+          fname = prompt("The file name must contain only letters.");
+        } else {
+          valid = true;
+        }
+      }
+
+      if (fname != null) {
+        var vals = [];
+        var val, valN;
+        text = '{\n';
+
+        // records values in elemrnts and creats text
+        for (i in elements_list) {
+          elem = elements_list[i]
+          // records values in elemrnts
+          vals.push(document.getElementById(elem).value);
+          // makes text
+          val = document.getElementById(elem).value;
+
+          if (val == Ukey) {
+            //if val in set to unnecessary
+            val = '"'+ Ukey +'"';
+          }else{
+            // TODO Validation check
+            valN = parseFloat(val);
+
+            if (val.includes(',')) {
+              // if value is comaseperated values
+              val = '['+ val +']';
+            } else if (!isNaN(valN)) {
+              //if value is a number
+              // pass
+            } else {
+              // if value is a string
+              val = '"'+ val +'"';
+            }
+          }
+            console.log("val:" + val);
+            console.log(description_list[elem]);
+            //adds values to text
+            text = text + '"'+elem+'"' + ': ' + val + ',\n';
+          }
+
+        for (key in description_list) {
+          var des = description_list[key];
+          key = "D_" + key;
+          text = text + '"'+key+'"' + ': ' + '"'+ des +'"' + ',\n';
+        }
+
+        text = text.substring(0, text.length - 2);
+        text = text + '\n}';
+
+        // var fname = document.getElementById("FName").value;
+        // if (fname) {
+        //  fname += ".json";
+        //  download(fname, text);
+        // }else{
+        //  download("file.json", text);
+        // }
+
+        document.getElementById('subData').value = text;
+        document.getElementById('subFileName').value = fname;
+        document.getElementById('submitingForm').submit();
+      }
+    }
+
+    //reads json configuration file
+    function handleFileSelect() {
+        if (window.File && window.FileReader && window.FileList && window.Blob) {
+
+        } else {
+            alert('The File APIs are not fully supported in this browser.');
+            return;
+        }
+
+        input = document.getElementById('fileInput');
+        if (!input) {
+          alert("Um, couldn't find the fileinput element.");
+       }
+       else if (!input.files) {
+          alert("This browser doesn't seem to support the `files` property of file inputs.");
+       }
+       else if (!input.files[0]) {
+          alert("Please select a file before clicking 'Load'");
+       }
+       else {
+          file = input.files[0];
+          fr = new FileReader();
+          fr.onload = updatePage;
+          fr.readAsText(file);
+       }
+    }
+
+
+    function updatePage() {
+      // var varList = ["TaskName", "OnsetOfStimulis", "StimulusDuration", "Manufacturer", "ManufacturersModelName", "EchoTrainLength", "AcquisitionNumber", "MagneticFieldStrength", "FlipAngle", "EchoTime", "RepetitionTime", "PhaseEncodingLines", "BandwidthPerPixelPhaseEncode", "EffectiveEchoSpacing", "TotalReadoutTime", "AccelFactPE", "TrueEchoSpacing", "PhaseEncodingDirection", "AcquisitionTime",
+      //  "SliceTiming", "ImageOrientation", "SliceThickness"]
+
+      //reads json configuration file
+      var key_list = [];
+      var Jfile = JSON.parse(fr.result);
+
+      //puts Json keys into a list
+      for (var key in Jfile) {
+        key_list.push(key);
+      }
+
+      //code to load preprepared data in to the text boxes
+      for (var key in key_list) {
+        var item = key_list[key];
+        var val = Jfile[item];
+
+        if (val == Ukey) {
+          unnecessary(item);
+        } else if (!val == "") {
+          document.getElementById(item).value = val;
+        }
+      }
+    }
+
+    //marks unnecessary boxes
+    function unnecessary(elementName) {
+      document.getElementById(elementName).placeholder = "Unnecessary";
+      document.getElementById(elementName).style.color = "red";
+    }
+
+
+    function checked_unnecessary(elementName) {
+      document.getElementById(elementName).value = Ukey;
+      document.getElementById(elementName).disabled = true;
+    }
+
+    function normalize(elementName) {
+      document.getElementById(elementName).value = "";
+      document.getElementById(elementName).disabled = false;
+    }
+
+
+    function check_box(id) {
+      var value = document.getElementById(id).value;
+      if (value == Ukey) {
+        normalize(id);
+      } else {
+        checked_unnecessary(id);
+      }
+    }
+</script>
+  </head>
+  <body>
+    <h1>Brain Scan Form</h1>
+    <h3>please fill out the required areas</h3>
+    <div id="QBlock">
+    <form id="theForm">
+      Please select a configFile: <input type="file" id="fileInput"><br>
+    </form>
+    <form id="submitingForm" method="POST" action="/admin" style="visibility: hidden;">
+      <input type="text" id="subFileName" name="fileName">
+      <input type="text" id="subData" name="Data">
+    </form>
+    </div>
+  </body>
+</html>

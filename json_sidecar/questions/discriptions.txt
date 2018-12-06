@@ -1,0 +1,9 @@
+{
+"OnsetOfStimulis": "in seconds",
+"StimulusDuration": "in seconds",
+"AcquisitionTime": "year, month, day, hour (24h), minute, second",
+"SliceTiming": "defined, in seconds, as the time of each slice acquisition in relation to the beginning of volume acquisition",
+"ImageOrientation": "axial, sagittal, or coronal",
+"and the other one": "Hey it worked",
+"The_new_one": "A discription"
+}
